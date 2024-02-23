@@ -1,8 +1,24 @@
-from typing import Union
-from fastapi import FastAPI
+from typing import Union, List
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy.orm import Session
+from . import crud, models, schemas
+from database import SessionLocal, engine
 from pydantic import BaseModel
 
+models.Base.metadata.create_all(bind=engine)
+
 app = FastAPI()
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        # yield: return a generator
+        yield db
+    finally:
+        db.close()
+
+# TODO: Continue here https://fastapi.tiangolo.com/tutorial/sql-databases/#main-fastapi-app
 
 class Item(BaseModel):
     name: str
