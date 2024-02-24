@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
 from datetime import date
+from typing_extensions import Annotated
 
 def get_stock(f_db: Session, f_stock_id: int):
     return f_db.query(models.Stock).filter(models.Stock.m_id == f_stock_id).first()

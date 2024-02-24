@@ -10,7 +10,7 @@ def create_new_stock(f_stock: StockCreate) -> int:
 
 if __name__ == "__main__":
     new_stock = StockCreate(
-        m_name="Test Stock",
+        m_name="Test Stock 3",
         m_assumed_growth_rate_anual= 0.1,
         m_description= "Random company",
         m_intrinsic_value= 500000000,
