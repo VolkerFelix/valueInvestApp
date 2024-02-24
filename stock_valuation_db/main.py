@@ -18,30 +18,21 @@ def get_db() -> Iterator[Session]:
     finally:
         db.close()
 
-@app.post("/users/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email= user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    return crud.create_user(db=db, user=user)
+@app.post("/stocks/", response_model=schemas.Stock)
+def add_stock(f_stock: schemas.StockCreate, f_db: Session = Depends(get_db)):
+    db_stock = crud.get_stock_by_name(f_db, f_name=f_stock.m_name)
+    if db_stock:
+        raise HTTPException(status_code=400, detail="Stock already exists")
+    return crud.add_stock(f_db=f_db, f_stock=f_stock)
 
-@app.get("/users/", response_model=List[schemas.User])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    users = crud.get_users(db, skip= skip, limit= limit)
-    return users
+@app.get("/stocks/", response_model=List[schemas.Stock])
+def read_stocks(f_skip: int = 0, f_limit: int = 100, f_db: Session = Depends(get_db)):
+    stocks = crud.get_stocks(f_db, f_skip=f_skip, f_limit=f_limit)
+    return stocks
 
-@app.get("/users/{user_id}", response_model=schemas.User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db, user_id=user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
-
-@app.post("/users/{user_id}/items", response_model=schemas.Item)
-def create_item_for_user(user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)):
-    return crud.create_user_item(db, item=item, user_id=user_id)
-
-@app.get("/items/", response_model=List[schemas.Item])
-def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    items = crud.get_items(db, skip=skip, limit=limit)
-    return items
+@app.get("/stocks/{f_stock_id}", response_model=schemas.Stock)
+def read_stock(f_stock_id: int, f_db: Session = Depends(get_db)):
+    db_stock = crud.get_stock(f_db, f_stock_id=f_stock_id)
+    if db_stock is None:
+        raise HTTPException(status_code=404, detail="Stock not found")
+    return db_stock

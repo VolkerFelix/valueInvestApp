@@ -1,32 +1,23 @@
 # In order not to confuse the SQLAlchemy models and the Pydantic models,
 # the Pydantic stuff goes in this schemas file.
-from typing import List, Union
+from typing import Union
 from pydantic import BaseModel
+from datetime import date
 
-class ItemBase(BaseModel):
-    title: str
-    description: Union[str,None] = None
+class StockBase(BaseModel):
+    m_name: str
+    m_description: Union[str,None] = None
+    m_intrinsic_value: float
+    m_over_timespan_years: int
+    m_safety_margin_ratio: float
+    m_assumed_growth_rate_anual: float
 
-class ItemCreate(ItemBase):
+class StockCreate(StockBase):
     pass
 
-class Item(ItemBase):
-    id: int
-    owner_id: int
-
-    class Config:
-        orm_mode = True
-
-class UserBase(BaseModel):
-    email: str
-
-class UserCreate(UserBase):
-    password: str
-
-class User(UserBase):
-    id: int
-    is_active: bool
-    items: List[Item] = []
+class Stock(StockBase):
+    m_id: int
+    m_last_update: date
 
     class Config:
         orm_mode = True

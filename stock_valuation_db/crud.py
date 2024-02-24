@@ -1,30 +1,20 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
+from datetime import date
 
-def get_user(db: Session, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first()
+def get_stock(f_db: Session, f_stock_id: int):
+    return f_db.query(models.Stock).filter(models.Stock.m_id == f_stock_id).first()
 
-def get_user_by_email(db: Session, email: str):
-    return db.query(models.User).filter(models.User.email == email).first()
+def get_stock_by_name(f_db: Session, f_name: str):
+    return f_db.query(models.Stock).filter(models.Stock.m_name == f_name).first()
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.User).offset(skip).limit(limit).all()
+def get_stocks(f_db: Session, f_skip: int = 0, f_limit: int = 100):
+    return f_db.query(models.Stock).offset(f_skip).limit(f_limit).all()
 
-def create_user(db: Session, user: schemas.UserCreate):
-    fake_hashed_password = user.password + "notreallyhashed"
-    db_user = models.User(email= user.email, hashed_password= fake_hashed_password)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
-
-def get_items(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Item).offset(skip).limit(limit).all()
-
-def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
-    # **kwargs: keyword arguments as dict
-    db_item = models.Item(**item.model_dump(), owner_id= user_id)
-    db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
-    return db_item
+def add_stock(f_db: Session, f_stock: schemas.StockCreate):
+    db_stock = models.Stock(**f_stock.model_dump())
+    db_stock.m_last_update = date.today()
+    f_db.add(db_stock)
+    f_db.commit()
+    f_db.refresh(db_stock)
+    return db_stock
