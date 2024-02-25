@@ -8,6 +8,18 @@ def create_new_stock(f_stock: StockCreate) -> int:
     result = requests.post(url=create_stock_url, data=f_stock.model_dump_json())
     return result.status_code
 
+def rquest_access_token():
+    token_endpoint = BASE_URL + "/token"
+    result = requests.post(
+        url=token_endpoint,
+        data={
+            "grant_type": "password",
+            "username": "machine",
+            "password": "secret"
+        }
+    )
+    return result
+
 if __name__ == "__main__":
     new_stock = StockCreate(
         m_name="Test Stock 3",
@@ -20,3 +32,7 @@ if __name__ == "__main__":
 
     status_code = create_new_stock(new_stock)
     print(status_code)
+
+    # Request access token
+    respone = rquest_access_token()
+    print(respone.json())
