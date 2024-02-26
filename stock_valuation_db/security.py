@@ -1,8 +1,11 @@
 from passlib.context import CryptContext
 from typing import Union
 from datetime import datetime, timedelta, timezone
+from fastapi import HTTPException, status
 from jose import jwt
 import pprint
+
+from .schemas import User
 
 # Secret key to sign the JWT tokens
 # Generate new one with 'openssl rand -hex 32'
@@ -17,7 +20,9 @@ authenticated_users_db = {
         "email": "",
         "full_name": "",
         "hashed_password": "$2b$12$JU3IL8o5PCKgMZV9QkaOB.kDXjmHnvaSB1nSJ8DC1S1SK38GKL4Pi",
-        "disabled": False
+        "disabled": False,
+        "read_stock": True,
+        "write_stock": True
     }
 }
 
@@ -40,3 +45,21 @@ def create_access_token(f_data: dict, f_expires_delta: Union[timedelta, None] = 
     pprint.pprint(to_encode)
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+def check_read_permission(f_user: User):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="User not allowed to read stocks",
+        headers={"WWW-Authenticate": "Bearer"}
+    )
+    if not f_user.read_stock:
+        raise credentials_exception
+    
+def check_write_permission(f_user: User):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="User not allowed to write stocks",
+        headers={"WWW-Authenticate": "Bearer"}
+    )
+    if not f_user.write_stock:
+        raise credentials_exception

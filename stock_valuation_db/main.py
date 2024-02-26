@@ -1,4 +1,4 @@
-from typing import List, Iterator, Union
+from typing import List, Iterator, Union, cast
 from typing_extensions import Annotated
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -54,6 +54,7 @@ def get_current_active_user(
     if f_current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return f_current_user
+    
 
 @app.post("/token")
 async def login_for_access_token(
@@ -78,13 +79,7 @@ async def login_for_access_token(
     )
     return schemas.Token(access_token=access_token, token_type="bearer")
 
-
-@app.get("/users/me", response_model=schemas.User)
-def read_users_me(f_current_user: Annotated[schemas.User, Depends(get_current_active_user)]):
-    return f_current_user
-
-# Dependency
-## Create an independent session per request and make sure the connection is closed afterwards.
+# Create an independent session per request and make sure the connection is closed afterwards.
 def get_db() -> Iterator[Session]:
     db = SessionLocal()
     try:
@@ -92,24 +87,39 @@ def get_db() -> Iterator[Session]:
     finally:
         db.close()
 
-@app.get("/secure/")
-def read_stocks_secure(f_token: Annotated[str, Depends(oauth2_scheme)]):
-    return {"token": f_token}
-
-@app.post("/stocks/", response_model=schemas.Stock)
-def add_stock(f_stock: schemas.StockCreate, f_db: Session = Depends(get_db)):
-    db_stock = crud.get_stock_by_name(f_db, f_name=f_stock.m_name)
-    if db_stock:
-        raise HTTPException(status_code=400, detail="Stock already exists")
-    return crud.add_stock(f_db=f_db, f_stock=f_stock)
-
-@app.get("/stocks/", response_model=List[schemas.Stock])
-def read_stocks(f_skip: int = 0, f_limit: int = 100, f_db: Session = Depends(get_db)):
+@app.get("/stocks/", response_model= List[schemas.Stock])
+def get_stocks(
+    f_current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+    f_skip: int = 0,
+    f_limit: int = 100,
+    f_db: Session = Depends(get_db)
+) -> List[schemas.Stock]:
+    security.check_read_permission(f_current_user)
     stocks = crud.get_stocks(f_db, f_skip=f_skip, f_limit=f_limit)
     return stocks
 
+@app.post("/stocks/", response_model=schemas.Stock)
+def add_stock(
+    f_current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+    f_stock: schemas.StockCreate,
+    f_db: Session = Depends(get_db)
+):
+    security.check_write_permission(f_current_user)  
+    db_stock = crud.get_stock_by_name(f_db, f_name=f_stock.m_name)
+    if db_stock:
+        # Update stock values
+        return crud.update_stock(f_db, db_stock, cast(schemas.StockUpdate, f_stock))
+    else:
+        # Create new stock
+        return crud.add_stock(f_db=f_db, f_stock=f_stock)
+
 @app.get("/stocks/{f_stock_id}", response_model=schemas.Stock)
-def read_stock(f_stock_id: int, f_db: Session = Depends(get_db)):
+def read_stock(
+    f_current_user: Annotated[schemas.User, Depends(get_current_active_user)],
+    f_stock_id: int,
+    f_db: Session = Depends(get_db)
+):
+    security.check_read_permission(f_current_user)
     db_stock = crud.get_stock(f_db, f_stock_id=f_stock_id)
     if db_stock is None:
         raise HTTPException(status_code=404, detail="Stock not found")

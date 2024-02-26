@@ -19,3 +19,11 @@ def add_stock(f_db: Session, f_stock: schemas.StockCreate):
     f_db.commit()
     f_db.refresh(db_stock)
     return db_stock
+
+def update_stock(f_db: Session, f_stock_current: schemas.Stock, f_stock_update: schemas.StockUpdate):
+    updated_stock_current_db = f_stock_current.model_copy(update={"m_intrinsic_value": 1000.0})
+    updated_stock_current_db.m_last_update = date.today()
+    f_db.add(updated_stock_current_db)
+    f_db.commit()
+    f_db.refresh(updated_stock_current_db)
+    return updated_stock_current_db
