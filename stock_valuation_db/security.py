@@ -3,7 +3,6 @@ from typing import Union
 from datetime import datetime, timedelta, timezone
 from fastapi import HTTPException, status
 from jose import jwt
-import pprint
 
 from .schemas import User
 
@@ -41,8 +40,6 @@ def create_access_token(f_data: dict, f_expires_delta: Union[timedelta, None] = 
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    print("Token to be encoded:")
-    pprint.pprint(to_encode)
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
