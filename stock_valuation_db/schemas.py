@@ -15,12 +15,6 @@ class StockBase(BaseModel):
 class StockCreate(StockBase):
     pass
 
-class StockUpdate(StockBase):
-    m_intrinsic_value: float
-    m_over_timespan_years: int
-    m_safety_margin_ratio: float
-    m_assumed_growth_rate_anual: float
-
 class Stock(StockBase):
     m_id: int
     m_last_update: Union[date, None] = None

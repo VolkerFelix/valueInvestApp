@@ -105,13 +105,14 @@ def add_stock(
     f_db: Session = Depends(get_db)
 ):
     security.check_write_permission(f_current_user)  
-    db_stock = crud.get_stock_by_name(f_db, f_name=f_stock.m_name)
+    db_stock = crud.get_stock_by_name(f_db, f_stock.m_name)
     if db_stock:
         # Update stock values
-        return crud.update_stock(f_db, db_stock, cast(schemas.StockUpdate, f_stock))
+        print("Want to call update")
+        return crud.update_stock(f_db, db_stock, f_stock)
     else:
         # Create new stock
-        return crud.add_stock(f_db=f_db, f_stock=f_stock)
+        return crud.add_stock(f_db, f_stock)
 
 @app.get("/stocks/{f_stock_id}", response_model=schemas.Stock)
 def read_stock(
