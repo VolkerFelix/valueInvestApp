@@ -10,4 +10,4 @@ ENV PYTHONUNBUFFERED 1
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY stock_valuation_db stock_valuation_db
+COPY app .

@@ -6,9 +6,8 @@ from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 from datetime import timedelta
 
-from . import crud, models, schemas, security
-from .database import SessionLocal, engine
-#from .security import SECRET_KEY, ALGORITHM, verify_password
+import crud, models, schemas, security
+from database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 

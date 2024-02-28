@@ -8,7 +8,10 @@ class StockBase(BaseModel):
     m_name: str
     m_description: Union[str, None] = None
     m_intrinsic_value: float
-    m_over_timespan_years: int
+    m_intrinsic_value_with_safety: float
+    m_current_market_cap: float
+    m_diff_intr_val_w_safty_to_m_cap: float
+    m_over_timespan: int
     m_safety_margin_ratio: float
     m_assumed_growth_rate_anual: float
 
