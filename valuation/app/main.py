@@ -1,6 +1,7 @@
 import pandas as pd
 from wacc import get_wacc
 from yahooFinancials import YahooFinancialStats, BILLION
+from db_interface import rquest_access_token, create_new_stock
 import statistics
 from typing import List
 
@@ -32,6 +33,7 @@ def calc_discounted_cash_flows(f_cash_flows: List[float], f_wacc: float) -> List
     return discounted_cf
 
 if __name__ == '__main__':
+    bearer = ''
     for company_name, symbol in company_symbol_map.items():
         # Init company
         company = YahooFinancialStats(symbol)
@@ -62,9 +64,26 @@ if __name__ == '__main__':
 
         print(f"Intrinsic value of {company_name} in B$:")
         print("%.2f" % (intrinsic_value / BILLION))
-        print(f"With safety margin of {SAFETY_MARGIN * 100.0}%:")
-        print("%.2f" % (intrinsic_value_incl_safety / BILLION))
         print("Market Cap in B$:")
         print("%.2f" % (market_cap / BILLION))
-        print("Difference intrinsic value incl. safety to market cap in %:")
-        print("%.2f" % ((1.0 - (intrinsic_value_incl_safety / market_cap)) * 100.0))
+        print("Safety margin in %:")
+        print("%.2f" % ((intrinsic_value - market_cap) / intrinsic_value * 100.0))
+
+        new_stock = {
+            "m_name": "Test Stock",
+            "m_description": "For testing",
+            "m_intrinsic_value": 50.0,
+            "m_current_market_cap": 25.0,
+            "m_safety_margin": 0.5,
+            "m_over_timespan": 5,
+            "m_assumed_growth_rate_anual": 0.1
+        }
+
+        if not bearer:
+            # Request access token
+            respone = rquest_access_token()
+            print(respone.json())
+            bearer = respone.json()['access_token']
+        
+        status_code = create_new_stock(new_stock, bearer)
+        print(status_code)

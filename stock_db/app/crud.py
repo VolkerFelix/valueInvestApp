@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-import models, schemas
+from . import models, schemas
 from datetime import date
 from typing_extensions import Annotated
 from typing import List
