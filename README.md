@@ -1,9 +1,9 @@
 # valueInvestApp
 
 ## How to run the app
-Activate venv and run:
+Activate venv, change to app directory and run:
 ```
-uvicorn stock_valuation_db.main:app --reload
+uvicorn main:app --reload
 ```
 ## Docker
 ```

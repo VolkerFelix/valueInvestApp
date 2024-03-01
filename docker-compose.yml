@@ -25,6 +25,10 @@ services:
   valuation_app:
     build: valuation
     command: bash -c 'python main.py'
+    environment:
+      - STOCK_DB_URL=stock_db
+      - STOCK_DB_PORT=8000
+
     
 volumes:
   postgres_data:

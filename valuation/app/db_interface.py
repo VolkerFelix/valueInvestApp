@@ -1,6 +1,9 @@
-import requests, json
+import requests, json, os
 
-BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = os.getenv('STOCK_DB_URL')
+PORT = os.getenv('STOCK_DB_PORT')
+
+BASE_URL = "http://" + BASE_URL + ":" + PORT
 
 def create_new_stock(f_stock: dict, f_bearer_token: str) -> int:
     create_stock_url = BASE_URL + "/stocks/"

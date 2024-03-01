@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import HTTPException, status
 from jose import jwt
 
-from .schemas import User
+from schemas import User
 
 # Secret key to sign the JWT tokens
 # Generate new one with 'openssl rand -hex 32'

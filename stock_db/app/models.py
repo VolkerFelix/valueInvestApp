@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Date, Float
 from sqlalchemy.orm import relationship
 
-from .database import Base
+from database import Base
 
 class Stock(Base):
     __tablename__ = "stocks"
