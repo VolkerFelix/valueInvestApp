@@ -7,8 +7,8 @@ from datetime import date
 class StockBase(BaseModel):
     m_name: str
     m_description: Union[str, None] = None
-    m_intrinsic_value: float
-    m_current_market_cap: float
+    m_intrinsic_value: int
+    m_current_market_cap: int
     m_safety_margin: float
     m_over_timespan: int
     m_assumed_growth_rate_anual: float

@@ -27,8 +27,8 @@ class IntrinsicValue:
         self.m_company = YahooFinancialStats(f_company_symbol)
         self.m_expected_growth = f_expected_growth
         self.m_time_span = f_time_span_years
-        self.m_intrinsic_value = 0.0
-        self.m_market_cap = 0.0
+        self.m_intrinsic_value = 0
+        self.m_market_cap = 0
 
         self._calc()
 
@@ -42,9 +42,11 @@ class IntrinsicValue:
         # Get discounted cash flows
         wacc = get_wacc(self.m_company)
         fcf_future_discounted = calc_discounted_cash_flows(future_fcf, wacc)
+        # Store current market cap
+        market_cap = self.m_company.get_market_cap()
+        self.m_market_cap = int(market_cap)
         # Calc terminal value
-        self.m_market_cap = round(self.m_company.get_market_cap(), 2)
-        price_to_fcf_ratio = self.m_market_cap / fcf_all[0]
+        price_to_fcf_ratio = market_cap / fcf_all[0]
         # Terminal value: Last discounted fcf x price to fcf ratio = selling price
         terminal_value = fcf_future_discounted[-1] * price_to_fcf_ratio
         # Sum up all discounted fcf
@@ -54,5 +56,5 @@ class IntrinsicValue:
         intrinsic_value = sum_discounted_fcf + terminal_value
         # Cash reserves of the company need to be added as well
         cash = self.m_company.get_total_cash()
-
-        self.m_intrinsic_value = round(intrinsic_value + cash, 2)
+        # Store
+        self.m_intrinsic_value = int(intrinsic_value + cash)

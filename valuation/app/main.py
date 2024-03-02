@@ -1,5 +1,5 @@
 from yahooFinancials import YahooFinancialStats, BILLION
-from db_interface import rquest_access_token, create_new_stock
+from stock_db_interface import rquest_access_token, create_new_stock
 from intrinsicValue import IntrinsicValue
 from typing import List
 from decimal import *
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     bearer = ''
     for company_name, symbol in company_symbol_map.items():
         stock = IntrinsicValue(symbol, GROWTH_EXPECTED, TIME_SPAN)
-        safety_margin = round((stock.m_intrinsic_value - stock.m_market_cap) / stock.m_intrinsic_value * 100.0, 2)
+        safety_margin = (stock.m_intrinsic_value - stock.m_market_cap) / stock.m_intrinsic_value * 100.0
 
         print(f"Intrinsic value of {company_name} in B$:")
         print(stock.m_intrinsic_value / BILLION)
@@ -33,8 +33,8 @@ if __name__ == '__main__':
         new_stock = {
             "m_name": company_name,
             "m_description": "",
-            "m_intrinsic_value": stock.m_intrinsic_value/BILLION,
-            "m_current_market_cap": stock.m_market_cap/BILLION,
+            "m_intrinsic_value": stock.m_intrinsic_value,
+            "m_current_market_cap": stock.m_market_cap,
             "m_safety_margin": safety_margin,
             "m_over_timespan": TIME_SPAN,
             "m_assumed_growth_rate_anual": GROWTH_EXPECTED
