@@ -10,6 +10,7 @@ class StockBase(BaseModel):
     m_intrinsic_value: int
     m_current_market_cap: int
     m_safety_margin: float
+    m_undervalued: bool
     m_over_timespan: int
     m_assumed_growth_rate_anual: float
 

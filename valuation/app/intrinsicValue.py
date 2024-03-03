@@ -3,6 +3,8 @@ import statistics
 from yahooFinancials import YahooFinancialStats
 from wacc import get_wacc
 
+MILLION = 1000000.0
+
 def get_expected_fcf_for_n_years(f_current_fcf: float, f_growth_rate: float, f_years: int) -> List[float]:
     future_fcf = [f_current_fcf]
     for i in range(f_years):
@@ -27,8 +29,10 @@ class IntrinsicValue:
         self.m_company = YahooFinancialStats(f_company_symbol)
         self.m_expected_growth = f_expected_growth
         self.m_time_span = f_time_span_years
-        self.m_intrinsic_value = 0
-        self.m_market_cap = 0
+        self.m_intrinsic_value = 0 # in Million $
+        self.m_market_cap = 0 # in Million $
+        self.m_safety_margin = 0.0
+        self.m_undervalued = False
 
         self._calc()
 
@@ -36,6 +40,9 @@ class IntrinsicValue:
         # Predict future cash flows
         ## Get average over the past free cash flows
         fcf_all = self.m_company.get_fcf()
+        if not fcf_all:
+            self.not_enough_data()
+            return
         fcf_avg = statistics.mean(fcf_all)
         # Get expected cash flows for the next n years
         future_fcf = get_expected_fcf_for_n_years(fcf_avg, self.m_expected_growth, self.m_time_span)
@@ -44,7 +51,7 @@ class IntrinsicValue:
         fcf_future_discounted = calc_discounted_cash_flows(future_fcf, wacc)
         # Store current market cap
         market_cap = self.m_company.get_market_cap()
-        self.m_market_cap = int(market_cap)
+        self.m_market_cap = int(market_cap / MILLION)
         # Calc terminal value
         price_to_fcf_ratio = market_cap / fcf_all[0]
         # Terminal value: Last discounted fcf x price to fcf ratio = selling price
@@ -57,4 +64,17 @@ class IntrinsicValue:
         # Cash reserves of the company need to be added as well
         cash = self.m_company.get_total_cash()
         # Store
-        self.m_intrinsic_value = int(intrinsic_value + cash)
+        self.m_intrinsic_value = int((intrinsic_value + cash) / MILLION)
+        if self.m_intrinsic_value > self.m_market_cap:
+            # Under-valued
+            self.m_safety_margin = (self.m_intrinsic_value - self.m_market_cap) / self.m_market_cap * 100.0
+            self.m_undervalued = True
+        else:
+            # Over-valued
+            self.m_safety_margin = (self.m_intrinsic_value - self.m_market_cap) / self.m_intrinsic_value * 100.0
+            self.m_undervalued = False
+
+    def not_enough_data(self):
+        self.m_intrinsic_value = 0
+        self.m_market_cap = 0
+        self.m_safety_margin = 0.0

@@ -1,9 +1,10 @@
 import requests
 from bs4 import BeautifulSoup, ResultSet
 from typing import List
+from scrape import scrape_table, scrape_div_by_title
 
-NVIDIA_SYMBOL = 'NVDA'
-BILLION = 1000000000
+MILLION = 1000000
+BILLION = MILLION * 1000
 TRILLION = BILLION * 1000
 
 # Simulate browser
@@ -25,18 +26,15 @@ FINANCIALS_TAB_MAP = {
 
 def scrape_statistics(f_symbol: str) -> ResultSet:
     url = f"{BASE_BETA_URL}{f_symbol}/key-statistics"
-    response = requests.get(url, headers=HEADER)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    return soup.find_all("table")
+    return scrape_table(url)
 
 def scrape_financials(f_symbol: str, f_title: str) -> ResultSet:
     url = f"{BASE_BETA_URL}{f_symbol}/{FINANCIALS_TAB_MAP[f_title]}"
-    response = requests.get(url, headers=HEADER)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    return soup.find_all("div", {"title": f_title})
+    return scrape_div_by_title(url, f_title)
 
 class YahooFinancialStats:
     def __init__(self, f_symbol: str):
+        print("Yahoo Finance: " + f_symbol)
         self.m_financials = {}
         self._load_financials(f_symbol, list(FINANCIALS_TAB_MAP.keys()))
         self.m_key_statistics = {}
@@ -50,7 +48,11 @@ class YahooFinancialStats:
                 # Get the whole row
                 grand_parent = element.parent.parent
                 for item in grand_parent:
-                    content = item.find_all("span")[0].get_text().strip()
+                    try:
+                        content = item.find_all("span")[0].get_text().strip()
+                    except IndexError:
+                        # No data available for this year
+                        continue
                     if content == title:
                         continue
                     values.append(float(content.replace(',', '')) * 1000.0)
@@ -91,23 +93,30 @@ class YahooFinancialStats:
         return string_to_float(self.m_key_statistics['Total Cash (mrq)'])
     
     def get_ebt(self) -> List[float]:
+        # TODO: Convert
         return self.m_financials['Pretax Income']
     
     def get_tax_provision(self) -> List[float]:
+        # TODO: Convert
         return self.m_financials['Tax Provision']
     
     def get_total_debt(self) -> List[float]:
+        # TODO: Convert
         return self.m_financials['Total Debt']
     
-    def get_total_equity(self) -> List[float]:
+    def get_total_equity(self) -> float:
         return self.m_financials['Total Equity Gross Minority Interest']
     
-def string_to_float(f_string_number: str) -> float:
+def string_to_float(f_value: str) -> float:
         value_f = 0.0
-        if "T" in f_string_number:
-            value_f = float(f_string_number.replace('T','')) * TRILLION
-        elif "B" in f_string_number: 
-            value_f = float(f_string_number.replace('B','')) * BILLION
+        if "T" in f_value:
+            value_f = float(f_value.replace('T','')) * TRILLION
+        elif "B" in f_value: 
+            value_f = float(f_value.replace('B','')) * BILLION
+        elif "M" in f_value: 
+            value_f = float(f_value.replace('M','')) * MILLION
+        elif "N/A" in f_value: 
+            value_f = 0.0
         else:
             assert False, f"Amount not defined"
 
