@@ -27,4 +27,8 @@ class CompaniesList:
                 # Index 1 of tds will contain the value
                 if not tds:
                     continue
-                self.m_companies[tds[2].get_text().strip()] = tds[1].get_text()
+                name = tds[2].get_text().strip()
+                symbol = tds[1].get_text()
+                symbol = symbol.replace('.','-')
+                self.m_companies[name] = symbol
+

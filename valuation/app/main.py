@@ -1,8 +1,9 @@
-from yahooFinancials import YahooFinancialStats, BILLION
+from yahooFinancials import YahooFinancialStats
 from stock_db_interface import rquest_access_token, create_new_stock
 from intrinsicValue import IntrinsicValue
 from stock_db_interface import StockDBFormat
 from companiesList import CompaniesList
+from forecast import Analysis
 from typing import List
 from decimal import *
 
@@ -12,7 +13,7 @@ COMPANY_LIST_NAMES_MAP = {
 
 # Define an expected growth rate
 ## S&P500 average since 1957 = 10.26%
-GROWTH_EXPECTED = 0.1026
+GROWTH_EXPECTED_BACKUP = 0.1026
 # Time span in years for valuation
 TIME_SPAN = 5
 
@@ -22,7 +23,13 @@ if __name__ == '__main__':
     for list_name, list_symbol in COMPANY_LIST_NAMES_MAP.items():
         list = CompaniesList(list_symbol)
         for company_name, symbol in list.m_companies.items():
-            intrinsic_value = IntrinsicValue(symbol, GROWTH_EXPECTED, TIME_SPAN)
+            print(company_name)
+            print(symbol)
+            yahoo_analysis = Analysis(symbol)
+            growth_rate = yahoo_analysis.get_expected_growth_rate_over_5_years_per_annum()
+            if not growth_rate:
+                growth_rate = GROWTH_EXPECTED_BACKUP
+            intrinsic_value = IntrinsicValue(symbol, growth_rate, TIME_SPAN)
 
             stock = {
                 "m_name": company_name,
@@ -32,7 +39,7 @@ if __name__ == '__main__':
                 "m_safety_margin": intrinsic_value.m_safety_margin,
                 "m_undervalued": intrinsic_value.m_undervalued,
                 "m_over_timespan": TIME_SPAN,
-                "m_assumed_growth_rate_anual": GROWTH_EXPECTED
+                "m_assumed_growth_rate_anual": growth_rate
             }
 
             if not bearer:
@@ -42,5 +49,4 @@ if __name__ == '__main__':
                 bearer = respone.json()['access_token']
             
             status_code = create_new_stock(StockDBFormat(**stock), bearer)
-            print(company_name)
             print(status_code)

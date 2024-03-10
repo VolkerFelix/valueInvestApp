@@ -1,12 +1,7 @@
 import requests
 from bs4 import BeautifulSoup, ResultSet
 from typing import List
-from scrape import scrape_table, scrape_div_by_title
-
-THOUSAND = 1000
-MILLION = THOUSAND * 1000
-BILLION = MILLION * 1000
-TRILLION = BILLION * 1000
+from scrape import scrape_table, scrape_div_by_title, string_to_float, THOUSAND
 
 # Simulate browser
 HEADER = {
@@ -35,7 +30,6 @@ def scrape_financials(f_symbol: str, f_title: str) -> ResultSet:
 
 class YahooFinancialStats:
     def __init__(self, f_symbol: str):
-        print("Yahoo Finance: " + f_symbol)
         self.m_financials = {}
         self._load_financials(f_symbol, list(FINANCIALS_TAB_MAP.keys()))
         self.m_key_statistics = {}
@@ -97,7 +91,11 @@ class YahooFinancialStats:
         return self.m_financials['Pretax Income']
     
     def get_tax_provision(self) -> List[float]:
-        return self.m_financials['Tax Provision']
+        tax = self.m_financials['Tax Provision']
+        if not tax:
+            # Set to zero since we don't know any better
+            tax = [0.0]
+        return tax
     
     def get_total_debt(self) -> List[float]:
         total_debt = self.m_financials['Total Debt']
@@ -106,22 +104,5 @@ class YahooFinancialStats:
             total_debt = [0.0]
         return total_debt
     
-    def get_total_equity(self) -> float:
+    def get_total_equity(self) -> List[float]:
         return self.m_financials['Total Equity Gross Minority Interest']
-    
-def string_to_float(f_value: str, f_scale: float = 1.0) -> float:
-        value_f = 0.0
-        if "T" in f_value:
-            value_f = float(f_value.replace('T','')) * TRILLION
-        elif "B" in f_value: 
-            value_f = float(f_value.replace('B','')) * BILLION
-        elif "M" in f_value: 
-            value_f = float(f_value.replace('M','')) * MILLION
-        elif "," in f_value: 
-            value_f = float(f_value.replace(',',''))
-        elif "N/A" in f_value: 
-            value_f = 0.0
-        else:
-            assert False, f"Amount not defined"
-
-        return value_f * f_scale

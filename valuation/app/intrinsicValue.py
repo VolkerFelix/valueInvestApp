@@ -40,7 +40,7 @@ class IntrinsicValue:
         # Predict future cash flows
         ## Get average over the past free cash flows
         fcf_all = self.m_company.get_fcf()
-        if not fcf_all:
+        if not fcf_all or fcf_all[0] < 0.001:
             self.not_enough_data()
             return
         fcf_avg = statistics.mean(fcf_all)
