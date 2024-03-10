@@ -1,6 +1,5 @@
 from bs4 import ResultSet
 from scrape import scrape_table
-import pprint
 
 # Simulate browser
 HEADER = {
@@ -29,9 +28,3 @@ class CompaniesList:
                 if not tds:
                     continue
                 self.m_companies[tds[2].get_text().strip()] = tds[1].get_text()
-
-if __name__ == '__main__':
-    for list_name, list_symbol in COMPANY_LIST_NAMES_MAP.items():
-        list = CompaniesList(list_symbol)
-        print(list_name)
-        pprint.pprint(list.m_companies)

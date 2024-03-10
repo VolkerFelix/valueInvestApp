@@ -3,7 +3,8 @@ from bs4 import BeautifulSoup, ResultSet
 from typing import List
 from scrape import scrape_table, scrape_div_by_title
 
-MILLION = 1000000
+THOUSAND = 1000
+MILLION = THOUSAND * 1000
 BILLION = MILLION * 1000
 TRILLION = BILLION * 1000
 
@@ -55,7 +56,7 @@ class YahooFinancialStats:
                         continue
                     if content == title:
                         continue
-                    values.append(float(content.replace(',', '')) * 1000.0)
+                    values.append(string_to_float(content, f_scale=THOUSAND))
 
             self.m_financials[title] = values
 
@@ -93,21 +94,22 @@ class YahooFinancialStats:
         return string_to_float(self.m_key_statistics['Total Cash (mrq)'])
     
     def get_ebt(self) -> List[float]:
-        # TODO: Convert
         return self.m_financials['Pretax Income']
     
     def get_tax_provision(self) -> List[float]:
-        # TODO: Convert
         return self.m_financials['Tax Provision']
     
     def get_total_debt(self) -> List[float]:
-        # TODO: Convert
-        return self.m_financials['Total Debt']
+        total_debt = self.m_financials['Total Debt']
+        if not total_debt:
+            # Set to 0 since we don't know any better
+            total_debt = [0.0]
+        return total_debt
     
     def get_total_equity(self) -> float:
         return self.m_financials['Total Equity Gross Minority Interest']
     
-def string_to_float(f_value: str) -> float:
+def string_to_float(f_value: str, f_scale: float = 1.0) -> float:
         value_f = 0.0
         if "T" in f_value:
             value_f = float(f_value.replace('T','')) * TRILLION
@@ -115,9 +117,11 @@ def string_to_float(f_value: str) -> float:
             value_f = float(f_value.replace('B','')) * BILLION
         elif "M" in f_value: 
             value_f = float(f_value.replace('M','')) * MILLION
+        elif "," in f_value: 
+            value_f = float(f_value.replace(',',''))
         elif "N/A" in f_value: 
             value_f = 0.0
         else:
             assert False, f"Amount not defined"
 
-        return value_f
+        return value_f * f_scale

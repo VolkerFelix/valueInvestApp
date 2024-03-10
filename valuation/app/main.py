@@ -16,13 +16,6 @@ GROWTH_EXPECTED = 0.1026
 # Time span in years for valuation
 TIME_SPAN = 5
 
-# company_symbol_map = {
-#     'Nvidia': 'NVDA',
-#     'AMD': 'AMD',
-#     'ARM': 'ARM',
-#     'Qualcomm': 'QCOM'
-# }
-
 if __name__ == '__main__':
     bearer = ''
 
