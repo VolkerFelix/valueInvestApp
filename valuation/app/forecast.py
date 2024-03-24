@@ -34,8 +34,17 @@ class Analysis:
                 self.m_data[section_name][tds[0].get_text().strip()] = [tds[1].get_text(), tds[2].get_text(), tds[3].get_text(), tds[4].get_text()]
 
     def get_expected_growth_rate_over_5_years_per_annum(self) -> float:
-        return string_to_float(self.m_data['Growth Estimates']['Next 5 Years (per annum)'][0])
+        try:
+            growth_rate = self.m_data['Growth Estimates']['Next 5 Years (per annum)'][0]
+        except KeyError:
+            growth_rate = 'N/A'
+        return string_to_float(growth_rate)
     
     def get_growth_rate_over_past_5_years_per_annum(self) -> float:
-        return string_to_float(self.m_data['Growth Estimates']['Past 5 Years (per annum)'][0])
+        try:
+            growth_rate = self.m_data['Growth Estimates']['Past 5 Years (per annum)'][0]
+        except KeyError:
+            growth_rate = 'N/A'
+        return string_to_float(growth_rate)
+    
     

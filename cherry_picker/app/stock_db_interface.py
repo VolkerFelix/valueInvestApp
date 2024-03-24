@@ -1,14 +1,14 @@
 import requests, os
-from typing import Union
-from pydantic import BaseModel
+from typing import Union, List
+from pydantic import BaseModel, TypeAdapter
 
 BASE_URL = os.getenv('STOCK_DB_URL', default="stock_db")
 PORT = os.getenv('STOCK_DB_PORT', default='8000')
 
 BASE_URL = "http://" + BASE_URL + ":" + PORT
 
-# Local testing
-#BASE_URL = "http://127.0.0.1:8000"
+# Local test
+BASE_URL = "http://localhost:8008"
 
 class StockDBFormat(BaseModel):
     m_name: str
@@ -21,13 +21,20 @@ class StockDBFormat(BaseModel):
     m_used_growth_rate_annual: float
     m_assumed_growth_rate_company_annual: float
 
-def create_new_stock(f_stock: StockDBFormat, f_bearer_token: str) -> int:
-    create_stock_url = BASE_URL + "/stocks/"
+ta = TypeAdapter(List[StockDBFormat])
+
+def get_stocks(f_bearer_token: str) -> List[StockDBFormat]:
+    get_stocks_url = BASE_URL + "/stocks/"
     headers = {
         "Authorization": "Bearer " + f_bearer_token
     }
-    result = requests.post(url=create_stock_url, data=f_stock.model_dump_json(), headers=headers)
-    return result.status_code
+    result = requests.get(
+        url=get_stocks_url,
+        params={"f_skip": 0, "f_limit": 5},
+        headers=headers
+    )
+    parsed = ta.validate_python(result.json())
+    return parsed
 
 def rquest_access_token():
     token_endpoint = BASE_URL + "/token"

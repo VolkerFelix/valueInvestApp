@@ -11,7 +11,7 @@ from schemas import User
 SECRET_KEY = "997311bc0c2c78080b421ed50e783e4fe3a24952c0c657576eab4052f5add4e3"
 # Algo used to sign the tokens
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 90
+ACCESS_TOKEN_EXPIRE_MINUTES = 3600
 
 authenticated_users_db = {
     "crawler_client": {

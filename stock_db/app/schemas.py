@@ -12,7 +12,8 @@ class StockBase(BaseModel):
     m_safety_margin: float
     m_undervalued: bool
     m_over_timespan: int
-    m_assumed_growth_rate_anual: float
+    m_used_growth_rate_annual: float
+    m_assumed_growth_rate_company_annual: float
 
 class StockCreate(StockBase):
     pass

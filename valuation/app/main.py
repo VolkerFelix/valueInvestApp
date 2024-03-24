@@ -13,12 +13,13 @@ COMPANY_LIST_NAMES_MAP = {
 
 # Define an expected growth rate
 ## S&P500 average since 1957 = 10.26%
-GROWTH_EXPECTED_BACKUP = 0.1026
+SP500_GROWTH_AVG = 0.1026
 # Time span in years for valuation
 TIME_SPAN = 5
 
 if __name__ == '__main__':
     bearer = ''
+    counter = 0
 
     for list_name, list_symbol in COMPANY_LIST_NAMES_MAP.items():
         list = CompaniesList(list_symbol)
@@ -26,9 +27,10 @@ if __name__ == '__main__':
             print(company_name)
             print(symbol)
             yahoo_analysis = Analysis(symbol)
-            growth_rate = yahoo_analysis.get_expected_growth_rate_over_5_years_per_annum()
+            growth_rate = SP500_GROWTH_AVG
+            growth_rate_yahoo = yahoo_analysis.get_expected_growth_rate_over_5_years_per_annum()
             if not growth_rate:
-                growth_rate = GROWTH_EXPECTED_BACKUP
+                growth_rate_yahoo = 0.0
             intrinsic_value = IntrinsicValue(symbol, growth_rate, TIME_SPAN)
 
             stock = {
@@ -39,7 +41,8 @@ if __name__ == '__main__':
                 "m_safety_margin": intrinsic_value.m_safety_margin,
                 "m_undervalued": intrinsic_value.m_undervalued,
                 "m_over_timespan": TIME_SPAN,
-                "m_assumed_growth_rate_anual": growth_rate
+                "m_used_growth_rate_annual": growth_rate,
+                "m_assumed_growth_rate_company_annual": growth_rate_yahoo
             }
 
             if not bearer:
@@ -49,4 +52,6 @@ if __name__ == '__main__':
                 bearer = respone.json()['access_token']
             
             status_code = create_new_stock(StockDBFormat(**stock), bearer)
+            counter += 1
             print(status_code)
+            print(counter)

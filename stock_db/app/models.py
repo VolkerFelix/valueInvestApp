@@ -15,4 +15,5 @@ class Stock(Base):
     m_safety_margin = Column(name='Safety margin in %', type_=Float)
     m_undervalued = Column(name='Undervalued', type_=Boolean)
     m_over_timespan = Column(name='Timespan in years', type_=Integer)
-    m_assumed_growth_rate_anual = Column(name='Assumed growth rate in %', type_=Float)
+    m_used_growth_rate_annual = Column(name='Used growth rate for calc in %', type_=Float)
+    m_assumed_growth_rate_company_annual = Column(name='Assumed growth rate in %', type_=Float)
