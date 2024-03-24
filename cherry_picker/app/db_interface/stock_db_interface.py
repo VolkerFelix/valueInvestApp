@@ -30,7 +30,7 @@ def get_stocks(f_bearer_token: str) -> List[StockDBFormat]:
     }
     result = requests.get(
         url=get_stocks_url,
-        params={"f_skip": 0, "f_limit": 5},
+        params={"f_skip": 0, "f_limit": 50},
         headers=headers
     )
     parsed = ta.validate_python(result.json())
