@@ -1,9 +1,8 @@
-from yahooFinancials import YahooFinancialStats
-from stock_db_interface import rquest_access_token, create_new_stock
-from intrinsicValue import IntrinsicValue
-from stock_db_interface import StockDBFormat
-from companiesList import CompaniesList
-from forecast import Analysis
+from db_interface.stock_db_interface import rquest_access_token, create_new_stock
+from intrinsic_value.intrinsicValue import IntrinsicValue
+from db_interface.stock_db_interface import StockDBFormat
+from web_scrape.companiesList import CompaniesList
+from web_scrape.forecast import Analysis
 from typing import List
 from decimal import *
 

@@ -1,5 +1,5 @@
 from bs4 import ResultSet
-from scrape import scrape_table
+from web_scrape.scrape import scrape_table
 
 # Simulate browser
 HEADER = {

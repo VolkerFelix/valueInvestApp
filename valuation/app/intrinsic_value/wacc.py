@@ -1,4 +1,4 @@
-from yahooFinancials import YahooFinancialStats
+from web_scrape.yahooFinancials import YahooFinancialStats
 
 # https://www.wallstreetprep.com/knowledge/wacc/
 

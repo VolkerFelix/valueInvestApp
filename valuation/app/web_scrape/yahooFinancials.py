@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup, ResultSet
 from typing import List
-from scrape import scrape_table, scrape_div_by_title, string_to_float, THOUSAND
+from web_scrape.scrape import scrape_table, scrape_div_by_title, string_to_float, THOUSAND
 
 # Simulate browser
 HEADER = {

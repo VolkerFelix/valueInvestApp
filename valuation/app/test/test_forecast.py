@@ -1,4 +1,8 @@
-from forecast import Analysis
+import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from web_scrape.forecast import Analysis
 
 def test_analysis():
     symbol = 'SYF'

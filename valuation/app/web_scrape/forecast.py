@@ -1,5 +1,5 @@
 from bs4 import ResultSet
-from scrape import scrape_table, string_to_float
+from web_scrape.scrape import scrape_table, string_to_float
 
 # Simulate browser
 HEADER = {

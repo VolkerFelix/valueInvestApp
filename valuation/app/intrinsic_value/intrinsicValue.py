@@ -1,7 +1,7 @@
 from typing import List
 import statistics
-from yahooFinancials import YahooFinancialStats
-from wacc import get_wacc
+from web_scrape.yahooFinancials import YahooFinancialStats
+from intrinsic_value.wacc import get_wacc
 
 MILLION = 1000000.0
 
