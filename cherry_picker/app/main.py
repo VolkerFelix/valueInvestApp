@@ -1,6 +1,5 @@
 from db_interface.stock_db_interface import rquest_access_token, get_stocks
 from find_cherries.findCherries import findCherries
-from pprint import pprint
 
 if __name__ == '__main__':
     bearer = ''

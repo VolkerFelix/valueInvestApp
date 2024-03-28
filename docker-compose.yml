@@ -24,12 +24,15 @@ services:
 
   valuation_app:
     build: valuation
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; python main.py'
+    command: >
+      bash -c "while !</dev/tcp/stock_db/8000; do sleep 1; done;
+      python main.py --indexName SP500 --addToDatabase True --verbose True"
     environment:
       - STOCK_DB_URL=stock_db
       - STOCK_DB_PORT=8000
+    depends_on:
+      - stock_db
 
-    
 volumes:
   postgres_data:
   
