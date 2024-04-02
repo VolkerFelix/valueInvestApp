@@ -6,9 +6,11 @@ HEADER = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0'
 }
 
-def get_all_companies(f_list_name: str) -> ResultSet:
-    url = f"https://stockanalysis.com/list/{f_list_name}"
-    return scrape_table(url)
+def get_all_companies(f_index_url: str) -> ResultSet:
+    if 'DAX' in f_index_url:
+         return scrape_table(f_index_url, "constituents")
+    else:
+        return scrape_table(f_index_url)    
 
 class CompaniesList:
     def __init__(self, f_list_name: str):

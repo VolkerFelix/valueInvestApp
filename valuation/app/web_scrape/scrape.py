@@ -13,10 +13,13 @@ HEADER = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0'
 }
 
-def scrape_table(f_url: str) -> ResultSet:
+def scrape_table(f_url: str, f_table_id: str = '') -> ResultSet:
     response = requests.get(f_url, headers=HEADER)
     soup = BeautifulSoup(response.text, 'html.parser')
-    return soup.find_all("table")
+    if f_table_id:
+        return soup.find_all("table", {"id": f_table_id})
+    else:
+        return soup.find_all("table")
 
 def scrape_div_by_title(f_url: str, f_title: str) -> ResultSet:
     response = requests.get(f_url, headers=HEADER)

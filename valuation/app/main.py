@@ -9,8 +9,9 @@ import argparse
 import pprint
 import warnings
 
-COMPANY_LIST_NAMES_MAP = {
-    'SP500': 'sp-500-stocks'
+INDEX_URL_MAP = {
+    'SP500': 'https://stockanalysis.com/list/sp-500-stocks',
+    'DAX': 'https://en.wikipedia.org/wiki/DAX'
 }
 
 # Time span in years for valuation
@@ -43,12 +44,12 @@ def run_based_on_index_name(
         f_bearer_token: str = ''
     ):
     try:
-        index_symbol = COMPANY_LIST_NAMES_MAP[f_index_name]
+        index_url = INDEX_URL_MAP[f_index_name]
     except KeyError:
         print("Index name not found.")
 
     stock_counter = 0
-    for stock_name, symbol in CompaniesList(index_symbol).m_companies.items():
+    for stock_name, symbol in CompaniesList(index_url).m_companies.items():
         stock = run_analysis(symbol, stock_name)
         stock_counter += 1
         if f_verbose:
