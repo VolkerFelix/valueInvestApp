@@ -36,7 +36,7 @@ def get_stocks(f_bearer_token: str) -> List[StockDBFormat]:
     parsed = ta.validate_python(result.json())
     return parsed
 
-def rquest_access_token():
+def request_access_token():
     token_endpoint = BASE_URL + "/token"
     result = requests.post(
         url=token_endpoint,

@@ -22,11 +22,22 @@ services:
       - POSTGRES_PASSWORD=fastapi_traefik
       - POSTGRES_DB=fastapi_traefik
 
-  valuation_app:
+  valuation_app_sp500:
     build: valuation
     command: >
       bash -c "while !</dev/tcp/stock_db/8000; do sleep 1; done;
-      python main.py --indexName SP500 --addToDatabase True --verbose True"
+      python main.py --indexName SP500 --addToDatabase True --verbose True --scheduled True"
+    environment:
+      - STOCK_DB_URL=stock_db
+      - STOCK_DB_PORT=8000
+    depends_on:
+      - stock_db
+
+  valuation_app_dax:
+    build: valuation
+    command: >
+      bash -c "while !</dev/tcp/stock_db/8000; do sleep 1; done;
+      python main.py --indexName DAX --addToDatabase True --verbose True --scheduled True"
     environment:
       - STOCK_DB_URL=stock_db
       - STOCK_DB_PORT=8000

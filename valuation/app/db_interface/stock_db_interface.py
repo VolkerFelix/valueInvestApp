@@ -29,7 +29,7 @@ def create_new_stock(f_stock: StockDBFormat, f_bearer_token: str) -> int:
     result = requests.post(url=create_stock_url, data=f_stock.model_dump_json(), headers=headers)
     return result.status_code
 
-def rquest_access_token():
+def request_access_token():
     token_endpoint = BASE_URL + "/token"
     result = requests.post(
         url=token_endpoint,
@@ -39,4 +39,6 @@ def rquest_access_token():
             "password": "secret"
         }
     )
+    if result.status_code != 200:
+        raise requests.exceptions.RequestException(response=result)
     return result
