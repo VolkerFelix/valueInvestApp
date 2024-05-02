@@ -5,7 +5,7 @@ msft = yf.Ticker("MSFT")
 
 print("Free cashflow")
 free_cash_flow = msft.get_cash_flow().loc['FreeCashFlow']
-pprint.pprint(free_cash_flow)
+pprint.pprint(free_cash_flow[0])
 # WACC
 print("EBT")
 pprint.pprint(msft.get_financials().loc['PretaxIncome'])

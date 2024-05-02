@@ -18,7 +18,6 @@ def calc_discounted_cash_flows(f_cash_flows: List[float], f_wacc: float) -> List
     return discounted_cf
 
 class IntrinsicValue:
-    
     def __init__(
             self,
             f_company_symbol: str,
@@ -40,15 +39,18 @@ class IntrinsicValue:
         # Predict future cash flows
         ## Get average over the past free cash flows
         fcf_all = self.m_company.get_fcf()
-        if not fcf_all or fcf_all[0] < 0.001:
+        if fcf_all.empty or fcf_all[0] < 0.001:
             self.not_enough_data()
             return
         fcf_avg = statistics.mean(fcf_all)
+        print(f"FCF avg: {fcf_avg}")
         # Get expected cash flows for the next n years
         future_fcf = get_expected_fcf_for_n_years(fcf_avg, self.m_expected_growth, self.m_time_span)
         # Get discounted cash flows
         wacc = get_wacc(self.m_company)
+        print(f"WACC: {wacc}")
         fcf_future_discounted = calc_discounted_cash_flows(future_fcf, wacc)
+        print(f"FCF future discounted: {fcf_future_discounted}")
         # Store current market cap
         market_cap = self.m_company.get_market_cap()
         self.m_market_cap = int(market_cap / MILLION)
@@ -64,6 +66,8 @@ class IntrinsicValue:
         # Cash reserves of the company need to be added as well
         cash = self.m_company.get_total_cash()
         # Store
+        print(f"Intrinsic: {intrinsic_value}")
+        print(f"Cash: {cash}")
         self.m_intrinsic_value = int((intrinsic_value + cash) / MILLION)
         if self.m_intrinsic_value > self.m_market_cap:
             # Under-valued
