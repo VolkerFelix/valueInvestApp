@@ -15,12 +15,17 @@ HEADER = {
 
 def scrape_table(f_url: str, f_table_id: str = '') -> ResultSet:
     response = requests.get(f_url, headers=HEADER)
+    if response.history:
+        for resp in response.history:
+            print(resp.status_code, resp.url)
+        print("Final destination:")
+        print(response.status_code, response.url)
     soup = BeautifulSoup(response.text, 'html.parser')
     if f_table_id:
         return soup.find_all("table", {"id": f_table_id})
     else:
         return soup.find_all("table")
-
+    
 def scrape_div_by_title(f_url: str, f_title: str) -> ResultSet:
     response = requests.get(f_url, headers=HEADER)
     soup = BeautifulSoup(response.text, 'html.parser')

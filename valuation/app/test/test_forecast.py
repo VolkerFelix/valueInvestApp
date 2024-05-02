@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from web_scrape.forecast import Analysis
 
 def test_analysis():
-    symbol = 'SYF'
+    symbol = 'NVDA'
     company = Analysis(symbol)
     growth_rate = company.get_expected_growth_rate_over_5_years_per_annum()
     growth_rate_past = company.get_growth_rate_over_past_5_years_per_annum()

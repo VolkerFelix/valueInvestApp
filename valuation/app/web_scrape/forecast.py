@@ -1,5 +1,6 @@
 from bs4 import ResultSet
 from web_scrape.scrape import scrape_table, string_to_float
+import yfinance as yf
 
 # Simulate browser
 HEADER = {
@@ -7,13 +8,15 @@ HEADER = {
 }
 
 def get_yahoo_analysis(f_symbol: str) -> ResultSet:
-    url = f"https://finance.yahoo.com/quote/{f_symbol}/analysis"
+    # Use Yahoo Classic
+    url = f"https://finance.yahoo.com/quote/{f_symbol}/analysis?.neo_opt=0"
     return scrape_table(url)
 
 class Analysis:
     def __init__(self, f_symbol: str):
         self.m_data = {}
         self._load_analysis(f_symbol)
+
 
     def _load_analysis(self, f_symbol: str) -> None:
         scraped_data = get_yahoo_analysis(f_symbol)
