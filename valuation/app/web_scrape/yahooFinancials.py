@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import yfinance as yf
 import math
 
@@ -44,12 +45,20 @@ class YahooFinancialStats:
         return ebt
     
     def get_tax_provision(self) -> pd.DataFrame:
-        tax = self.m_ticker.get_financials().loc['TaxProvision'].fillna(0)
+        try:
+            tax = self.m_ticker.get_financials().loc['TaxProvision'].fillna(0)
+        except KeyError:
+            # TODO: Log this event
+            tax = pd.Series(0, index=np.arange(4))
         assert not tax.isnull().values.any(), "Contains NaN!"
         return tax
     
     def get_total_debt(self) -> pd.DataFrame:
-        debt = self.m_ticker.get_balancesheet().loc['TotalDebt'].fillna(0)
+        try:
+            debt = self.m_ticker.get_balancesheet().loc['TotalDebt'].fillna(0)
+        except KeyError:
+            # TODO: Log this event
+            debt = pd.Series(0, index=np.arange(4))
         assert not debt.isnull().values.any(), "Contains NaN!"
         return debt
     

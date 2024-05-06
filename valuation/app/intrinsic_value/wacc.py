@@ -14,7 +14,10 @@ def get_wacc(f_company: YahooFinancialStats) -> float:
     ## Get latest EBT and tax provision
     ebt = f_company.get_ebt()[0]
     tax_provision = f_company.get_tax_provision()[0]
-    tax_rate = max(tax_provision/ebt, 0.0) # Set to 0 in case of negative tax rate
+    if ebt > 0.001: # prevent div by 0
+        tax_rate = max(tax_provision/ebt, 0.0) # Set to 0 in case of negative tax rate
+    else:
+        tax_rate = 0.0
     # Latest debt
     total_debt = f_company.get_total_debt()[0]
     # Equity
