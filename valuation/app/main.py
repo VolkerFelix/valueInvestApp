@@ -52,6 +52,7 @@ def run_based_on_index_name(
         f_sync_db: bool,
         f_verbose: bool
     ):
+    logger.info(f"Running based on index name: {f_index_name}")
     bearer = ''
     if f_sync_db:
         # Request new bearer token
@@ -112,12 +113,13 @@ if __name__ == '__main__':
                         help="Shall the valuation run once per week?")
     args = parser.parse_args()
     logger.info(args)
+    print(args)
 
     if args.indexName:
         if not args.indexName in SUPPORTED_INDICES:
             raise ValueError('Unsupported index')
         if args.scheduled:
-            schedule.every().day.at("10:23", "Europe/Lisbon").do(
+            schedule.every().day.at("18:53", "Europe/Lisbon").do(
                 run_based_on_index_name,
                 f_index_name = args.indexName,
                 f_sync_db = args.addToDatabase,
@@ -125,10 +127,14 @@ if __name__ == '__main__':
             )
         else:
             # Run only once
-            run_based_on_index_name(args.indexName, args.addToDatabase, args.verbose)
+            run_based_on_index_name(
+                f_index_name=args.indexName,
+                f_sync_db=args.addToDatabase,
+                f_verbose=args.verbose
+            )
     elif args.stockSymbol:
         if args.scheduled:
-            schedule.every().day.at("10:23", "Europe/Lisbon").do(
+            schedule.every().day.at("18:53", "Europe/Lisbon").do(
                 run_based_on_stock_symbol,
                 f_stock_symbol = args.stockSymbol,
                 f_sync_db = args.addToDatabase,
