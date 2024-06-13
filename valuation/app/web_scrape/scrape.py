@@ -20,7 +20,7 @@ def scrape_table(f_url: str, f_table_id: str = '') -> ResultSet:
         return soup.find_all("table", {"id": f_table_id})
     else:
         return soup.find_all("table")
-
+    
 def scrape_div_by_title(f_url: str, f_title: str) -> ResultSet:
     response = requests.get(f_url, headers=HEADER)
     soup = BeautifulSoup(response.text, 'html.parser')

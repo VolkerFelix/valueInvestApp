@@ -12,6 +12,7 @@ BASE_URL = "http://" + BASE_URL + ":" + PORT
 
 class StockDBFormat(BaseModel):
     m_name: str
+    m_part_of_index: str
     m_description: Union[str, None] = None
     m_intrinsic_value: int
     m_current_market_cap: int

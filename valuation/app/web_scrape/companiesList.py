@@ -6,7 +6,12 @@ INDEX_URL_MAP = {
     'DAX': 'https://en.wikipedia.org/wiki/DAX'
 }
 
-def __dax_get_names_and_symbols(f_scrapped_table: ResultSet) -> dict:
+INDEX_AVG_HIST_GROWTH_MAP = {
+    'SP500': 0.1026,
+    'DAX': 0.0804
+}
+
+def _dax_get_names_and_symbols(f_scrapped_table: ResultSet) -> dict:
     result = {}
     for table in f_scrapped_table:
         # Scrape all rows
@@ -24,7 +29,7 @@ def __dax_get_names_and_symbols(f_scrapped_table: ResultSet) -> dict:
 
     return result
 
-def __sp500_get_names_and_symbols(f_scrapped_table: ResultSet) -> dict:
+def _sp500_get_names_and_symbols(f_scrapped_table: ResultSet) -> dict:
     result = {}
     for table in f_scrapped_table:
         trs = table.find_all('tr')
@@ -39,24 +44,21 @@ def __sp500_get_names_and_symbols(f_scrapped_table: ResultSet) -> dict:
     
     return result
 
-def get_all_companies(f_index_name: str, f_index_url: str) -> dict:
-    result = {}
-    if f_index_name == 'DAX':
-        result = __dax_get_names_and_symbols(scrape_table(f_index_url, "constituents"))
-    elif f_index_name == 'SP500':
-        result =  __sp500_get_names_and_symbols(scrape_table(f_index_url))
-    else:
-        assert False, f"Index {f_index_name} not implemented."
-    
-    return result
-
 class CompaniesList:
     def __init__(self, f_index_name: str):
         self.m_companies = {}
-        index_url = ''
         try:
-            index_url = INDEX_URL_MAP[f_index_name]
+            self.m_index_url = INDEX_URL_MAP[f_index_name]
+            self.m_avg_growth_rate = INDEX_AVG_HIST_GROWTH_MAP[f_index_name]
         except KeyError:
             print("Index name not found.")
-        self.m_companies = get_all_companies(f_index_name, index_url)
 
+        self._get_all_companies(f_index_name)
+
+    def _get_all_companies(self, f_index_name: str):
+        if f_index_name == 'DAX':
+            self.m_companies = _dax_get_names_and_symbols(scrape_table(self.m_index_url, "constituents"))
+        elif f_index_name == 'SP500':
+            self.m_companies =  _sp500_get_names_and_symbols(scrape_table(self.m_index_url))
+        else:
+            AssertionError(f"Index {f_index_name} not implemented.")

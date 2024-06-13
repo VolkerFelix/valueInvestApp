@@ -6,6 +6,7 @@ from datetime import date
 
 class StockBase(BaseModel):
     m_name: str
+    m_part_of_index: str
     m_description: Union[str, None] = None
     m_intrinsic_value: int
     m_current_market_cap: int
