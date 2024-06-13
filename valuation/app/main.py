@@ -119,7 +119,7 @@ if __name__ == '__main__':
         if not args.indexName in SUPPORTED_INDICES:
             raise ValueError('Unsupported index')
         if args.scheduled:
-            schedule.every().day.at("18:53", "Europe/Lisbon").do(
+            schedule.every().day.at("21:33", "Europe/Lisbon").do(
                 run_based_on_index_name,
                 f_index_name = args.indexName,
                 f_sync_db = args.addToDatabase,
@@ -134,7 +134,7 @@ if __name__ == '__main__':
             )
     elif args.stockSymbol:
         if args.scheduled:
-            schedule.every().day.at("18:53", "Europe/Lisbon").do(
+            schedule.every().day.at("21:33", "Europe/Lisbon").do(
                 run_based_on_stock_symbol,
                 f_stock_symbol = args.stockSymbol,
                 f_sync_db = args.addToDatabase,
