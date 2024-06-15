@@ -7,7 +7,7 @@ services:
     ports:
       - 8008:8000
     environment:
-      - DATABASE_URL=postgresql://fastapi_traefik:fastapi_traefik@db:5432/fastapi_traefik
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
     depends_on:
       - db
 
@@ -18,9 +18,9 @@ services:
     expose:
       - 5432
     environment:
-      - POSTGRES_USER=fastapi_traefik
-      - POSTGRES_PASSWORD=fastapi_traefik
-      - POSTGRES_DB=fastapi_traefik
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
 
   valuation_app_sp500:
     build: valuation
