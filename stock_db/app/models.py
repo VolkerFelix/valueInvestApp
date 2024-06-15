@@ -8,6 +8,7 @@ class Stock(Base):
 
     m_id = Column(Integer, unique=True, primary_key=True)
     m_name = Column(String, unique=True, index=True)
+    m_part_of_index = Column(String)
     m_last_update = Column(Date)
     m_description = Column(String)
     m_intrinsic_value = Column(name='Intrinsic value in Million $', type_=Integer)

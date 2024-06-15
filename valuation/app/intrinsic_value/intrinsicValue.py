@@ -18,7 +18,6 @@ def calc_discounted_cash_flows(f_cash_flows: List[float], f_wacc: float) -> List
     return discounted_cf
 
 class IntrinsicValue:
-    
     def __init__(
             self,
             f_company_symbol: str,
@@ -40,7 +39,7 @@ class IntrinsicValue:
         # Predict future cash flows
         ## Get average over the past free cash flows
         fcf_all = self.m_company.get_fcf()
-        if not fcf_all or fcf_all[0] < 0.001:
+        if fcf_all.empty or fcf_all[0] < 0.001:
             self.not_enough_data()
             return
         fcf_avg = statistics.mean(fcf_all)

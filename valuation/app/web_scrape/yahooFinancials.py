@@ -1,108 +1,68 @@
-import requests
-from bs4 import BeautifulSoup, ResultSet
-from typing import List
-from web_scrape.scrape import scrape_table, scrape_div_by_title, string_to_float, THOUSAND
-
-# Simulate browser
-HEADER = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0'
-}
-
-BASE_BETA_URL = "https://finance.yahoo.com/quote/"
-
-FINANCIALS_TAB_MAP = {
-    "Operating Expense": "financials",
-    "Operating Income": "financials",
-    "Free Cash Flow": "cash-flow",
-    "Pretax Income": "financials",
-    "Tax Provision": "financials",
-    "Total Debt": "balance-sheet",
-    "Total Equity Gross Minority Interest": "balance-sheet"
-}
-
-def scrape_statistics(f_symbol: str) -> ResultSet:
-    url = f"{BASE_BETA_URL}{f_symbol}/key-statistics"
-    return scrape_table(url)
-
-def scrape_financials(f_symbol: str, f_title: str) -> ResultSet:
-    url = f"{BASE_BETA_URL}{f_symbol}/{FINANCIALS_TAB_MAP[f_title]}"
-    return scrape_div_by_title(url, f_title)
+import pandas as pd
+import numpy as np
+import yfinance as yf
+import math
 
 class YahooFinancialStats:
     def __init__(self, f_symbol: str):
-        self.m_financials = {}
-        self._load_financials(f_symbol, list(FINANCIALS_TAB_MAP.keys()))
-        self.m_key_statistics = {}
-        self._load_key_statistics(f_symbol)
-
-    def _load_financials(self, f_symbol: str, f_titles: List[str]) -> None:
-        for title in f_titles:
-            scraped_data = scrape_financials(f_symbol, title)
-            values = []
-            for element in scraped_data:
-                # Get the whole row
-                grand_parent = element.parent.parent
-                for item in grand_parent:
-                    try:
-                        content = item.find_all("span")[0].get_text().strip()
-                    except IndexError:
-                        # No data available for this year
-                        continue
-                    if content == title:
-                        continue
-                    values.append(string_to_float(content, f_scale=THOUSAND))
-
-            self.m_financials[title] = values
-
-    def _load_key_statistics(self, f_symbol: str) -> None:
-        scraped_data = scrape_statistics(f_symbol)
-        for table in scraped_data:
-            # Scrape all table rows into variable trs
-            trs = table.find_all('tr')
-            for tr in trs:
-                # Scrape all table data tags into variable tds
-                tds = tr.find_all('td')
-                # Index 0 of tds will contain the measurement
-                # Index 1 of tds will contain the value
-                self.m_key_statistics[tds[0].get_text().strip()] = tds[1].get_text()
+        self.m_ticker = yf.Ticker(f_symbol)
 
     def get_beta(self) -> float:
-        beta = self.m_key_statistics['Beta (5Y Monthly)']
-        if beta == 'N/A':
+        try:
+            beta = self.m_ticker.info['beta']
+        except KeyError:
+            # TODO: Log this event
             beta = 1.0
-        return float(beta)
+        assert not math.isnan(beta), "NaN beta!"
+        return beta
     
-    def get_op_ex(self) -> List[float]:
-        return self.m_financials['Operating Expense']
+    def get_market_cap(self) -> int:
+        try: 
+            market_cap = self.m_ticker.info['marketCap']
+        except KeyError:
+            # TODO: Log this
+            market_cap = 0
+        assert not math.isnan(market_cap), "NaN market cap!"
+        return market_cap
     
-    def get_op_income(self) -> List[float]:
-        return self.m_financials['Operating Income']
+    def get_total_cash(self) -> int:
+        try:
+            total_cash = self.m_ticker.info['totalCash']
+        except KeyError:
+            # TODO: Log this event
+            total_cash = 0
+        assert not math.isnan(total_cash), "NaN cash!"
+        return total_cash
     
-    def get_fcf(self) -> List[float]:
-        return self.m_financials['Free Cash Flow']
+    def get_fcf(self) -> pd.DataFrame:
+        free_cash_flow = self.m_ticker.get_cash_flow().loc['FreeCashFlow'].fillna(0)
+        assert not free_cash_flow.isnull().values.any(), "Contains NaN!"
+        return free_cash_flow
     
-    def get_market_cap(self) -> float:
-        return string_to_float(self.m_key_statistics['Market Cap (intraday)'])
+    def get_ebt(self) -> pd.DataFrame:
+        ebt = self.m_ticker.get_financials().loc['PretaxIncome'].fillna(0)
+        assert not ebt.isnull().values.any(), "Contains NaN!"
+        return ebt
     
-    def get_total_cash(self) -> float:
-        return string_to_float(self.m_key_statistics['Total Cash (mrq)'])
-    
-    def get_ebt(self) -> List[float]:
-        return self.m_financials['Pretax Income']
-    
-    def get_tax_provision(self) -> List[float]:
-        tax = self.m_financials['Tax Provision']
-        if not tax:
-            # Set to zero since we don't know any better
-            tax = [0.0]
+    def get_tax_provision(self) -> pd.DataFrame:
+        try:
+            tax = self.m_ticker.get_financials().loc['TaxProvision'].fillna(0)
+        except KeyError:
+            # TODO: Log this event
+            tax = pd.Series(0, index=np.arange(4))
+        assert not tax.isnull().values.any(), "Contains NaN!"
         return tax
     
-    def get_total_debt(self) -> List[float]:
-        total_debt = self.m_financials['Total Debt']
-        if not total_debt:
-            # Set to 0 since we don't know any better
-            total_debt = [0.0]
-        return total_debt
+    def get_total_debt(self) -> pd.DataFrame:
+        try:
+            debt = self.m_ticker.get_balancesheet().loc['TotalDebt'].fillna(0)
+        except KeyError:
+            # TODO: Log this event
+            debt = pd.Series(0, index=np.arange(4))
+        assert not debt.isnull().values.any(), "Contains NaN!"
+        return debt
     
-    def get_total_equity(self) -> List[float]:
-        return self.m_financials['Total Equity Gross Minority Interest']
+    def get_total_equity(self) -> pd.DataFrame:
+        equity = self.m_ticker.get_balancesheet().loc['TotalEquityGrossMinorityInterest'].fillna(0)
+        assert not equity.isnull().values.any(), "Contains NaN!"
+        return equity
