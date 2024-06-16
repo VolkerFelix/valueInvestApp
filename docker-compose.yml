@@ -8,6 +8,10 @@ services:
       - 8008:8000
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - REST_API_USER=${REST_API_USER}
+      - REST_API_PASSWORD=${REST_API_PASSWORD}
+      - REST_API_PASSWORD_HASHED=${REST_API_PASSWORD_HASHED}
+      - SECRET_KEY_JWT=${SECRET_KEY_JWT}
     depends_on:
       - db
 
@@ -30,6 +34,8 @@ services:
     environment:
       - STOCK_DB_URL=stock_db
       - STOCK_DB_PORT=8000
+      - REST_API_USER=${REST_API_USER}
+      - REST_API_PASSWORD=${REST_API_PASSWORD}
     depends_on:
       - stock_db
 
@@ -41,6 +47,8 @@ services:
     environment:
       - STOCK_DB_URL=stock_db
       - STOCK_DB_PORT=8000
+      - REST_API_USER=${REST_API_USER}
+      - REST_API_PASSWORD=${REST_API_PASSWORD}
     depends_on:
       - stock_db
 

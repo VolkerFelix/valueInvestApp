@@ -4,11 +4,12 @@ from pydantic import BaseModel, TypeAdapter
 
 BASE_URL = os.getenv('STOCK_DB_URL', default="stock_db")
 PORT = os.getenv('STOCK_DB_PORT', default='8000')
-
 BASE_URL = "http://" + BASE_URL + ":" + PORT
+# Uncomment for local testing
+#BASE_URL = "http://localhost:8008"
 
-# Local test
-BASE_URL = "http://localhost:8008"
+REST_API_USER = os.getenv('REST_API_USER')
+REST_API_PASSWORD = os.getenv('REST_API_PASSWORD')
 
 class StockDBFormat(BaseModel):
     m_name: str
@@ -43,8 +44,8 @@ def request_access_token():
         url=token_endpoint,
         data={
             "grant_type": "password",
-            "username": "crawler_client",
-            "password": "secret"
+            "username": REST_API_USER,
+            "password": REST_API_PASSWORD
         }
     )
     return result
