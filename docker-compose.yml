@@ -51,6 +51,21 @@ services:
       - REST_API_PASSWORD=${REST_API_PASSWORD}
     depends_on:
       - stock_db
+  
+  cherry-picker:
+    build: cherry_picker
+    command: >
+      bash -c "while !</dev/tcp/stock_db/8000; do sleep 1; done;
+      python3 main.py"
+    environment:
+      - STOCK_DB_URL=stock_db
+      - STOCK_DB_PORT=8000
+      - REST_API_USER=${REST_API_USER}
+      - REST_API_PASSWORD=${REST_API_PASSWORD}
+      - SP500_WEBHOOK=${SP500_WEBHOOK}
+      - DAX_WEBHOOK=${DAX_WEBHOOK}
+    depends_on:
+      - stock_db
 
 volumes:
   postgres_data:
