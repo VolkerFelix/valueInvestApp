@@ -14,6 +14,9 @@ import logging
 TIME_SPAN = 5
 # Supported indices
 SUPPORTED_INDICES = ['SP500', 'DAX']
+# Scheduled time
+TIME_SCHEDULE = "09:55"
+TIME_ZONE_SCHEDULE = "Europe/Lisbon"
 
 def get_bearer_token() -> str:
     response = request_access_token()
@@ -119,7 +122,7 @@ if __name__ == '__main__':
         if not args.indexName in SUPPORTED_INDICES:
             raise ValueError('Unsupported index')
         if args.scheduled:
-            schedule.every().day.at("21:33", "Europe/Lisbon").do(
+            schedule.every().day.at(TIME_SCHEDULE, TIME_ZONE_SCHEDULE).do(
                 run_based_on_index_name,
                 f_index_name = args.indexName,
                 f_sync_db = args.addToDatabase,
@@ -134,7 +137,7 @@ if __name__ == '__main__':
             )
     elif args.stockSymbol:
         if args.scheduled:
-            schedule.every().day.at("21:33", "Europe/Lisbon").do(
+            schedule.every().day.at(TIME_SCHEDULE, TIME_ZONE_SCHEDULE).do(
                 run_based_on_stock_symbol,
                 f_stock_symbol = args.stockSymbol,
                 f_sync_db = args.addToDatabase,
