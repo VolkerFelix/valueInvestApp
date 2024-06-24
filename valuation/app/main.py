@@ -15,7 +15,7 @@ TIME_SPAN = 5
 # Supported indices
 SUPPORTED_INDICES = ['SP500', 'DAX']
 # Scheduled time
-TIME_SCHEDULE = "09:55"
+TIME_SCHEDULE = "09:00"
 TIME_ZONE_SCHEDULE = "Europe/Lisbon"
 
 def get_bearer_token() -> str:
