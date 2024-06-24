@@ -30,7 +30,7 @@ services:
     build: valuation
     command: >
       bash -c "while !</dev/tcp/stock_db/8000; do sleep 1; done;
-      python3 main.py --indexName SP500 --addToDatabase True --verbose True --scheduled True"
+      python3 main.py --indexName SP500 --addToDatabase True"
     environment:
       - STOCK_DB_URL=stock_db
       - STOCK_DB_PORT=8000
@@ -43,7 +43,7 @@ services:
     build: valuation
     command: >
       bash -c "while !</dev/tcp/stock_db/8000; do sleep 1; done;
-      python3 main.py --indexName DAX --addToDatabase True --verbose True --scheduled True"
+      python3 main.py --indexName DAX --addToDatabase True"
     environment:
       - STOCK_DB_URL=stock_db
       - STOCK_DB_PORT=8000
@@ -56,7 +56,7 @@ services:
     build: cherry_picker
     command: >
       bash -c "while !</dev/tcp/stock_db/8000; do sleep 1; done;
-      python3 main.py"
+      python3 main.py --sendToDiscord True --verbose True"
     environment:
       - STOCK_DB_URL=stock_db
       - STOCK_DB_PORT=8000
