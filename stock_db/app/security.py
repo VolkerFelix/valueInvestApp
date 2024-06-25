@@ -15,7 +15,6 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 3600
 
 REST_API_USER = os.getenv('REST_API_USER')
-REST_API_PASSWORD = os.getenv('REST_API_PASSWORD')
 REST_API_PASSWORD_HASHED = os.getenv('REST_API_PASSWORD_HASHED')
 
 authenticated_users_db = {
@@ -34,9 +33,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def verify_password(f_plain_password: str, f_hashed_password: str) -> bool:
     return pwd_context.verify(f_plain_password, f_hashed_password)
-
-def get_password_hashed(f_password: str) -> str:
-    return pwd_context.hash(f_password)
 
 def create_access_token(f_data: dict, f_expires_delta: Union[timedelta, None] = None) -> str:
     to_encode = f_data.copy()
