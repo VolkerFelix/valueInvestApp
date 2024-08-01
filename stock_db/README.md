@@ -6,10 +6,8 @@ In order to find substantially undervalued companies in the global stock markets
 - Add new valuation info
 - Get specific stock valuation
 ## How to run
-### Linux using SQLite
+### Docker
 ```
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python uvicorn main:app --host 0.0.0.0
+docker build -t stock_db .
+docker run --rm -p 8000:8000 stock_db
 ```
