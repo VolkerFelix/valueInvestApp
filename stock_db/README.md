@@ -5,9 +5,3 @@ In order to find substantially undervalued companies in the global stock markets
 - List all stored valuation info on stocks
 - Add new valuation info
 - Get specific stock valuation
-## How to run
-### Docker
-```
-docker build -t stock_db .
-docker run --rm -p 8000:8000 stock_db
-```
