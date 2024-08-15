@@ -26,14 +26,25 @@ class IntrinsicValue:
     ):
         # Init company
         self.m_company = YahooFinancialStats(f_company_symbol)
-        self.m_expected_growth = f_expected_growth
         self.m_time_span = f_time_span_years
         self.m_intrinsic_value = 0 # in Million $
         self.m_market_cap = 0 # in Million $
         self.m_safety_margin = 0.0
         self.m_undervalued = False
 
+        self._set_expected_growth_rate()
+        print(f"Growth rate: {self.m_expected_growth}")
         self._calc()
+
+    # Calculate the historical growth rate based on equity changes
+    def _calc_historical_growth_rate(self) -> float:
+        mean_hist_growth_rate = self.m_company.get_total_equity().iloc[::-1].pct_change().mean()
+        print("Mean historical rate: ", mean_hist_growth_rate)
+        return mean_hist_growth_rate
+    
+    def _set_expected_growth_rate(self):
+        print("Analysis growth rate: ", self.m_company.get_analysis_growth_rate_estimate())
+        self.m_expected_growth = min(self._calc_historical_growth_rate(), self.m_company.get_analysis_growth_rate_estimate())
 
     def _calc(self) -> None:
         # Predict future cash flows

@@ -2,10 +2,12 @@ import pandas as pd
 import numpy as np
 import yfinance as yf
 import math
+from web_scrape.yahooAnalysis import Analysis
 
 class YahooFinancialStats:
     def __init__(self, f_symbol: str):
         self.m_ticker = yf.Ticker(f_symbol)
+        self.m_yahoo_analysis_growth_rate = Analysis(f_symbol).get_growth_rate_estimate_5_year_avg()
 
     def get_beta(self) -> float:
         try:
@@ -66,3 +68,6 @@ class YahooFinancialStats:
         equity = self.m_ticker.get_balancesheet().loc['TotalEquityGrossMinorityInterest'].fillna(0)
         assert not equity.isnull().values.any(), "Contains NaN!"
         return equity
+    
+    def get_analysis_growth_rate_estimate(self) -> float:
+        return self.m_yahoo_analysis_growth_rate

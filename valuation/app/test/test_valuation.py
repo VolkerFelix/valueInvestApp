@@ -6,8 +6,8 @@ from intrinsic_value.intrinsicValue import IntrinsicValue
 
 GROWTH_RATE = 0.1026
 TIME_SPAN = 5
-COMPANY_SYMBOL = "BAYN.DE"
-COMPANY_NAME = "Bayer"
+#COMPANY_SYMBOL = "BAYN.DE"
+COMPANY_SYMBOL = "MSFT"
 
 def test_intrinsic_value():
     intrinsic_value = IntrinsicValue(COMPANY_SYMBOL, GROWTH_RATE, TIME_SPAN)
