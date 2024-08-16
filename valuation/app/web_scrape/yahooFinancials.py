@@ -6,11 +6,10 @@ from web_scrape.yahooAnalysis import Analysis
 
 class YahooFinancialStats:
     def __init__(self, f_symbol: str):
+        # Data from yFinance
         self.m_ticker = yf.Ticker(f_symbol)
-        company_analysis = Analysis(f_symbol)
-        self.m_yahoo_analysis_future_growth_rate = company_analysis.get_growth_rate_estimate_next_5_y()
-        self.m_yahoo_analysis_past_growth_rate = company_analysis.get_growth_rate_estimate_past_5_y()
-
+        # Data scraped via ByteSoup
+        self.m_scraped_analysis = Analysis(f_symbol)
 
     def get_beta(self) -> float:
         try:
@@ -77,5 +76,10 @@ class YahooFinancialStats:
             assert not equity.isnull().values.any(), "Contains NaN!"
             return equity
     
-    def get_analysis_growth_rate_estimate(self) -> float:
-        return self.m_yahoo_analysis_future_growth_rate
+    def get_analysis_future_growth_rate(self) -> float:
+        future_growth = self.m_scraped_analysis.get_growth_rate_estimate_next_5_y()
+        return future_growth
+    
+    def get_analysis_past_growth_rate(self) -> float:
+        past_growth = self.m_scraped_analysis.get_growth_rate_estimate_past_5_y()
+        return past_growth

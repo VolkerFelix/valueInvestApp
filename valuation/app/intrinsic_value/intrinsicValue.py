@@ -21,29 +21,27 @@ class IntrinsicValue:
     def __init__(
             self,
             f_company_symbol: str,
-            f_expected_growth: float,
             f_time_span_years: int
     ):
         # Init company
         self.m_company = YahooFinancialStats(f_company_symbol)
         self.m_time_span = f_time_span_years
-        self.m_intrinsic_value = 0 # in Million $
-        self.m_market_cap = 0 # in Million $
+        self.m_intrinsic_value = 0.0 # in Million $
+        self.m_market_cap = 0.0 # in Million $
         self.m_safety_margin = 0.0
         self.m_undervalued = False
+        self.m_expected_growth = 0.0
 
-        self._set_expected_growth_rate()
-        self._calc()
-
-    # Calculate the historical growth rate based on equity changes
-    def _calc_historical_growth_rate(self) -> float:
-        mean_hist_growth_rate = self.m_company.get_total_equity().iloc[::-1].pct_change().mean()
-        return mean_hist_growth_rate
+        self.__set_expected_growth_rate()
+        self.__calc()
     
-    def _set_expected_growth_rate(self):
-        self.m_expected_growth = min(self._calc_historical_growth_rate(), self.m_company.get_analysis_growth_rate_estimate())
+    def __set_expected_growth_rate(self) -> None:
+        self.m_expected_growth = min(
+            self.m_company.get_analysis_past_growth_rate(),
+            self.m_company.get_analysis_future_growth_rate()
+            )
 
-    def _calc(self) -> None:
+    def __calc(self) -> None:
         # Predict future cash flows
         ## Get average over the past free cash flows
         fcf_all = self.m_company.get_fcf()
@@ -66,7 +64,7 @@ class IntrinsicValue:
         # Sum up all discounted fcf
         sum_discounted_fcf = 0
         for fcf in fcf_future_discounted : sum_discounted_fcf += fcf
-        # Instrinsic value = Sum of discounted cash flows + terminal value
+        # Intrinsic value = Sum of discounted cash flows + terminal value
         intrinsic_value = sum_discounted_fcf + terminal_value
         # Cash reserves of the company need to be added as well
         cash = self.m_company.get_total_cash()
