@@ -32,8 +32,6 @@ authenticated_users_db = {
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def verify_password(f_plain_password: str, f_hashed_password: str) -> bool:
-    print(f_plain_password)
-    print(f_hashed_password)
     return pwd_context.verify(f_plain_password, f_hashed_password)
 
 def create_access_token(f_data: dict, f_expires_delta: Union[timedelta, None] = None) -> str:
