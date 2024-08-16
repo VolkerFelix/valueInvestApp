@@ -7,7 +7,10 @@ from web_scrape.yahooAnalysis import Analysis
 class YahooFinancialStats:
     def __init__(self, f_symbol: str):
         self.m_ticker = yf.Ticker(f_symbol)
-        self.m_yahoo_analysis_growth_rate = Analysis(f_symbol).get_growth_rate_estimate_5_year_avg()
+        company_analysis = Analysis(f_symbol)
+        self.m_yahoo_analysis_future_growth_rate = company_analysis.get_growth_rate_estimate_next_5_y()
+        self.m_yahoo_analysis_past_growth_rate = company_analysis.get_growth_rate_estimate_past_5_y()
+
 
     def get_beta(self) -> float:
         try:
@@ -37,18 +40,21 @@ class YahooFinancialStats:
         return total_cash
     
     def get_fcf(self) -> pd.DataFrame:
-        free_cash_flow = self.m_ticker.get_cash_flow().loc['FreeCashFlow'].fillna(0)
-        assert not free_cash_flow.isnull().values.any(), "Contains NaN!"
-        return free_cash_flow
+        with pd.option_context("future.no_silent_downcasting", True):
+            free_cash_flow = self.m_ticker.get_cash_flow().loc['FreeCashFlow'].fillna(0.0).infer_objects(copy=False)
+            assert not free_cash_flow.isnull().values.any(), "Contains NaN!"
+            return free_cash_flow
     
     def get_ebt(self) -> pd.DataFrame:
-        ebt = self.m_ticker.get_financials().loc['PretaxIncome'].fillna(0)
-        assert not ebt.isnull().values.any(), "Contains NaN!"
-        return ebt
+        with pd.option_context("future.no_silent_downcasting", True):
+            ebt = self.m_ticker.get_financials().loc['PretaxIncome'].fillna(0.0).infer_objects(copy=False)
+            assert not ebt.isnull().values.any(), "Contains NaN!"
+            return ebt
     
     def get_tax_provision(self) -> pd.DataFrame:
         try:
-            tax = self.m_ticker.get_financials().loc['TaxProvision'].fillna(0)
+            with pd.option_context("future.no_silent_downcasting", True):
+                tax = self.m_ticker.get_financials().loc['TaxProvision'].fillna(0.0).infer_objects(copy=False)
         except KeyError:
             # TODO: Log this event
             tax = pd.Series(0, index=np.arange(4))
@@ -57,7 +63,8 @@ class YahooFinancialStats:
     
     def get_total_debt(self) -> pd.DataFrame:
         try:
-            debt = self.m_ticker.get_balancesheet().loc['TotalDebt'].fillna(0)
+            with pd.option_context("future.no_silent_downcasting", True):
+                debt = self.m_ticker.get_balancesheet().loc['TotalDebt'].fillna(0.0).infer_objects(copy=False)
         except KeyError:
             # TODO: Log this event
             debt = pd.Series(0, index=np.arange(4))
@@ -65,9 +72,10 @@ class YahooFinancialStats:
         return debt
     
     def get_total_equity(self) -> pd.DataFrame:
-        equity = self.m_ticker.get_balancesheet().loc['TotalEquityGrossMinorityInterest'].fillna(0)
-        assert not equity.isnull().values.any(), "Contains NaN!"
-        return equity
+        with pd.option_context("future.no_silent_downcasting", True):
+            equity = self.m_ticker.get_balancesheet().loc['TotalEquityGrossMinorityInterest'].fillna(0.0).infer_objects(copy=False)
+            assert not equity.isnull().values.any(), "Contains NaN!"
+            return equity
     
     def get_analysis_growth_rate_estimate(self) -> float:
-        return self.m_yahoo_analysis_growth_rate
+        return self.m_yahoo_analysis_future_growth_rate

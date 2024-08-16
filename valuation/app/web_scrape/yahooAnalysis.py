@@ -1,9 +1,6 @@
-from bs4 import ResultSet, BeautifulSoup
-import requests
 import pandas as pd
 from io import StringIO
-#from web_scrape.scrape import scrape_table, string_to_float
-from scrape import scrape_table, string_to_float, scrape_headers
+from web_scrape.scrape import scrape_table, string_to_float
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
@@ -35,13 +32,21 @@ class Analysis:
         # Load growth estimates
         self.__get_yahoo_analysis_growth_estimates()
 
-    def get_growth_rate_estimate_5_year_avg(self) -> float:
+    def get_growth_rate_estimate_next_5_y(self) -> float:
         try:
             next_5_y = self.m_growth_estimates[self.m_growth_estimates['Growth Estimates'] == 'Next 5 Years (per annum)'].iloc[0,1]
             return string_to_float(next_5_y)
         except Exception:
             return None
+        
+    def get_growth_rate_estimate_past_5_y(self) -> float:
+        try:
+            past_5_y = self.m_growth_estimates[self.m_growth_estimates['Growth Estimates'] == 'Past 5 Years (per annum)'].iloc[0,1]
+            return string_to_float(past_5_y)
+        except Exception:
+            return None
     
 if __name__ == "__main__":
-    growth_rate = Analysis("MSFT").get_growth_rate_estimate_5_year_avg()
-    print(growth_rate)
+    msft = Analysis("MSFT")
+    print(msft.get_growth_rate_estimate_next_5_y())
+    print(msft.get_growth_rate_estimate_past_5_y())

@@ -8,10 +8,13 @@ from web_scrape.yahooAnalysis import Analysis
 COMPANY_SYMBOL = "MSFT"
 
 def test_analysis():
-    growth_rate = Analysis(COMPANY_SYMBOL)
-    print("Growth rate: ", growth_rate)
-
-    assert growth_rate != 0.0, "Growth rate should be different than zero."
+    company = Analysis(COMPANY_SYMBOL)
+    future_growth = company.get_growth_rate_estimate_next_5_y()
+    past_growth = company.get_growth_rate_estimate_past_5_y()
+    assert isinstance(future_growth, float)
+    assert isinstance(past_growth, float)
+    assert future_growth != 0.0, "Future growth rate should be different than zero."
+    assert past_growth != 0.0, "Future growth rate should be different than zero."
 
 
 

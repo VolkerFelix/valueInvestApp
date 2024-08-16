@@ -33,24 +33,21 @@ class IntrinsicValue:
         self.m_undervalued = False
 
         self._set_expected_growth_rate()
-        print(f"Growth rate: {self.m_expected_growth}")
         self._calc()
 
     # Calculate the historical growth rate based on equity changes
     def _calc_historical_growth_rate(self) -> float:
         mean_hist_growth_rate = self.m_company.get_total_equity().iloc[::-1].pct_change().mean()
-        print("Mean historical rate: ", mean_hist_growth_rate)
         return mean_hist_growth_rate
     
     def _set_expected_growth_rate(self):
-        print("Analysis growth rate: ", self.m_company.get_analysis_growth_rate_estimate())
         self.m_expected_growth = min(self._calc_historical_growth_rate(), self.m_company.get_analysis_growth_rate_estimate())
 
     def _calc(self) -> None:
         # Predict future cash flows
         ## Get average over the past free cash flows
         fcf_all = self.m_company.get_fcf()
-        if fcf_all.empty or fcf_all[0] < 0.001:
+        if fcf_all.empty or fcf_all.iloc[0] < 0.001:
             self.not_enough_data()
             return
         fcf_avg = statistics.mean(fcf_all)
@@ -63,7 +60,7 @@ class IntrinsicValue:
         market_cap = self.m_company.get_market_cap()
         self.m_market_cap = int(market_cap / MILLION)
         # Calc terminal value
-        price_to_fcf_ratio = market_cap / fcf_all[0]
+        price_to_fcf_ratio = market_cap / fcf_all.iloc[0]
         # Terminal value: Last discounted fcf x price to fcf ratio = selling price
         terminal_value = fcf_future_discounted[-1] * price_to_fcf_ratio
         # Sum up all discounted fcf
