@@ -127,6 +127,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+set_env_vars.ps1
 
 # Spyder project settings
 .spyderproject

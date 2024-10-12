@@ -96,7 +96,7 @@ if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
     handler = logging.FileHandler('valuation.log', 'w', 'utf-8')
     logger.addHandler(handler)
-    parser = argparse.ArgumentParser(description='Inrinsic value calculation')
+    parser = argparse.ArgumentParser(description='Intrinsic value calculation')
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--indexName', type=str,
                         help="Provide index name, e.g. SP500")
