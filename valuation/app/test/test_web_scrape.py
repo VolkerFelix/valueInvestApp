@@ -2,21 +2,18 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from web_scrape.companiesList import CompaniesList
+from web_scrape.yahooAnalysis import Analysis
 
-STOCKS_PER_INDEX = {
-    "SP500": 500,
-    "DAX": 40
-}
+TEST_COMPANIES = [
+    "MSFT",
+    "LUV"
+]
 
-def test_companies_list():
-    fetched_amount = 0
-    desired_amount = 0
-    for index_name, stock_amount in STOCKS_PER_INDEX.items():
-        fetched_amount += len(CompaniesList(index_name).m_companies.items())
-        desired_amount += stock_amount
-
-    assert desired_amount==fetched_amount, "Not all stocks fetched!"
+def test_analysis():
+    for company in TEST_COMPANIES:
+        analysis = Analysis(company)
+        assert analysis.get_growth_rate_estimate_next_5_y != None, "Future growth rate not calculated."
+        assert analysis.get_growth_rate_estimate_past_5_y != None, "Past growth rate not calculated."
 
 
 

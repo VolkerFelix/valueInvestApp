@@ -36,10 +36,12 @@ class IntrinsicValue:
         self.__calc()
     
     def __set_expected_growth_rate(self) -> None:
-        self.m_expected_growth = min(
-            self.m_company.get_analysis_past_growth_rate(),
-            self.m_company.get_analysis_future_growth_rate()
-            )
+        past_growth_rate = self.m_company.get_analysis_past_growth_rate()
+        future_growth_rate = self.m_company.get_analysis_future_growth_rate()
+        if past_growth_rate and future_growth_rate:
+            self.m_expected_growth = min(past_growth_rate, future_growth_rate)
+        else:
+            raise Exception("Growth rate could not be estimated.")
 
     def __calc(self) -> None:
         # Predict future cash flows

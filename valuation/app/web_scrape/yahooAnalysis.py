@@ -45,8 +45,3 @@ class Analysis:
             return string_to_float(past_5_y)
         except Exception:
             return None
-    
-if __name__ == "__main__":
-    msft = Analysis("MSFT")
-    print(msft.get_growth_rate_estimate_next_5_y())
-    print(msft.get_growth_rate_estimate_past_5_y())

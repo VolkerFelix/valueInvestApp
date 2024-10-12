@@ -28,9 +28,14 @@ def run_analysis(
         f_stock_name: str = '',
         f_index_name:str = ''
     ) -> dict:
-    intrinsic_value = IntrinsicValue(
-        f_company_symbol=f_symbol,
-        f_time_span_years=TIME_SPAN)
+    try: 
+        intrinsic_value = IntrinsicValue(
+            f_company_symbol=f_symbol,
+            f_time_span_years=TIME_SPAN)
+    except Exception as e:
+        logger.warning(f"Could not calc intrinsic value of {f_stock_name}")
+        logger.warning(f"{e}")
+        raise Exception("Could not calc intrinsic value of {f_stock_name}")
 
     stock = {
         "m_name": f_stock_name,
@@ -61,15 +66,19 @@ def run_based_on_index_name(
     stock_counter = 0
     index = CompaniesList(f_index_name)
     for stock_name, symbol in index.m_companies.items():
-        stock = run_analysis(f_symbol=symbol,
-                             f_stock_name=stock_name,
-                             f_index_name=f_index_name)
-        stock_counter += 1
-        if f_verbose:
-            pprint.pprint(stock)
-            print(stock_counter)
-        if f_sync_db:
-            add_to_db(stock, bearer)
+        try:
+            stock = run_analysis(f_symbol=symbol,
+                                 f_stock_name=stock_name,
+                                 f_index_name=f_index_name)
+            stock_counter += 1
+            if f_verbose:
+                pprint.pprint(stock)
+                print(stock_counter)
+            if f_sync_db:
+                add_to_db(stock, bearer)
+        except Exception as e:
+            logging.warning(f"Skipped analysis of {stock_name}")
+            continue
 
 def run_based_on_stock_symbol(
         f_stock_symbol: str,
@@ -80,11 +89,16 @@ def run_based_on_stock_symbol(
     if f_sync_db:
         # Request new bearer token
         bearer = get_bearer_token()
-    stock = run_analysis(f_symbol=f_stock_symbol)
-    if f_verbose:
-        pprint.pprint(stock)
-    if f_sync_db:
-        add_to_db(stock, bearer)
+    try:
+        stock = run_analysis(f_symbol=f_stock_symbol)
+        if f_verbose:
+            pprint.pprint(stock)
+        if f_sync_db:
+            add_to_db(stock, bearer)
+    except Exception as e:
+        logging.warning(f"Could not conclude analysis of {f_stock_symbol}")
+        print(f"{e}")
+        exit(1)
 
 def add_to_db(f_stock: dict, f_bearer_token: str) -> int:
     status_code = create_new_stock(StockDBFormat(**f_stock), f_bearer_token)
